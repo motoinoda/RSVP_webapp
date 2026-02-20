@@ -27,6 +27,7 @@ let nontargetLen=0;
 let imageOrder = [];
 let stable_t=1000
 let isShuffle;
+let insertBlackScreen = false;
 
 
 
@@ -156,7 +157,7 @@ function displayImages() {
         }
 
         const isTarget = imageOrder[imageIndex] === 1;
-        // console.log('Displaying isTarget:', isTarget); 
+        // console.log('Displaying isTarget:', isTarget);
         if(isTarget){
             imageSrc = selecttargetImages[t_index];
             t_index++;
@@ -164,7 +165,7 @@ function displayImages() {
             imageSrc = selectnontargetImages[nt_index];
             nt_index++;
         }
-        
+
         // console.log('Displaying image:', imageSrc); // 表示する画像のパスをコンソールに出力
 
         main_iamge(imageSrc.url);
@@ -173,7 +174,20 @@ function displayImages() {
         imageIndex++;
 
         imageList.push(imageSrc.name);
-        setTimeout(showNextImage, frameDuration);
+
+        // 黒色画面挿入の処理
+        if (insertBlackScreen) {
+            // 画像表示時間は周期の90%
+            setTimeout(() => {
+                main_iamge(otherImages[3]); // 黒色画面を表示
+            }, frameDuration * 0.9);
+
+            // 次の画像は周期通りに表示（90% + 10% = 100%）
+            setTimeout(showNextImage, frameDuration);
+        } else {
+            // 黒色画面なしの場合は従来通り
+            setTimeout(showNextImage, frameDuration);
+        }
     }
 
 
@@ -301,7 +315,8 @@ window.addEventListener('load', function(){
             ntshowNum = parseInt(document.getElementById('nontargetCount').value,10);
             stable_t = parseInt(document.getElementById('stable_time').value,10)*1000;
             isShuffle = document.getElementById('isShuffle').checked;
-            frameRate = parseInt(document.getElementById('freq').value,10);
+            insertBlackScreen = document.getElementById('insertBlackScreen').checked;
+            frameRate = parseFloat(document.getElementById('freq').value,10);
             frameDuration = 1000 / frameRate; // フレーム間隔(ミリ秒)
 
             console.log(isShuffle);
